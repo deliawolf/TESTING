@@ -29,104 +29,294 @@ A modern, full-stack network automation tool built with Next.js (frontend) and F
 - **Node.js**: 18.x or higher
 - **npm**: 9.x or higher
 
-## Installation & Deployment
+## Quick Start (5 Minutes)
 
-### 1️⃣ Clone the Repository
+Follow these steps exactly to deploy the application:
+
+### Step 1: Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd Tollkit-Dev-temp
+git clone https://github.com/deliawolf/TESTING.git
+cd TESTING
 ```
 
-### 2️⃣ Backend Setup
+### Step 2: Backend Setup (Python)
 
 ```bash
-# Create Python virtual environment
+# Create and activate virtual environment
 python3 -m venv .venv
 
-# Activate virtual environment
+# Activate it:
 # On macOS/Linux:
 source .venv/bin/activate
 # On Windows:
-.venv\Scripts\activate
+# .venv\Scripts\activate
 
-# Install Python dependencies
+# Install all Python dependencies
 pip install -r requirements.txt
-
-# Verify installation
-python --version  # Should be 3.10+
 ```
 
-### 3️⃣ Frontend Setup
+**✅ Verify backend installation:**
 
 ```bash
+python --version  # Should show Python 3.10+
+pip list | grep fastapi  # Should show fastapi installed
+```
+
+### Step 3: Create Data Files
+
+```bash
+# Navigate to data directory
+cd data
+
+# Create your configuration files from examples
+cp credentials.json.example credentials.json
+cp jumphosts.json.example jumphosts.json
+cp inventory.json.example inventory.json
+
+# Return to project root
+cd ..
+```
+
+**📝 Edit these files with your actual:**
+
+- Device credentials (`data/credentials.json`)
+- Jump host configurations (`data/jumphosts.json`)
+- Network device inventory (`data/inventory.json`)
+
+### Step 4: Frontend Setup (Node.js)
+
+```bash
+# Navigate to frontend directory
 cd frontend
 
-# Install Node dependencies
+# Install all Node dependencies
 npm install
 
-# Verify installation
-node --version  # Should be 18+
-npm --version   # Should be 9+
+# Create environment file
+cp .env.example .env.local
+
+# Return to project root
+cd ..
 ```
 
-### 4️⃣ Start the Application
-
-**Terminal 1 - Backend (FastAPI):**
+**✅ Verify frontend installation:**
 
 ```bash
-# From project root
+node --version  # Should show v18+
+npm --version   # Should show v9+
+cd frontend && npm list next  # Should show next installed
+cd ..
+```
+
+### Step 5: Start the Application
+
+Open **TWO separate terminal windows/tabs**:
+
+**Terminal 1 - Backend:**
+
+```bash
+cd TESTING
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-**Terminal 2 - Frontend (Next.js):**
+**Expected output:**
+
+```
+INFO:     Uvicorn running on http://0.0.0.0:8000
+INFO:     Application startup complete.
+```
+
+**Terminal 2 - Frontend:**
 
 ```bash
-cd frontend
+cd TESTING/frontend
 npm run dev
 ```
 
-**Access the Application:**
+**Expected output:**
 
-- 🌐 **Frontend**: http://localhost:3000
-- 🔌 **Backend API**: http://localhost:8000
-- 📚 **API Documentation**: http://localhost:8000/docs
+```
+▲ Next.js 14
+- Local:        http://localhost:3000
+```
 
-## First-Time Setup
+### Step 6: Access the Application
 
-### 1. Configure Jump Hosts
+Open your browser and navigate to:
 
-1. Navigate to **Jump Hosts** page
-2. Click "Add Jump Host"
-3. Enter SSH connection details for your bastion hosts
+- 🌐 **Application**: http://localhost:3000
+- 🔌 **API Docs**: http://localhost:8000/docs
+
+## First-Time Configuration
+
+### 1. Add Jump Hosts
+
+1. Go to **Jump Hosts** page
+2. Click **"Add Jump Host"**
+3. Enter:
+   - Name: `jumphost1`
+   - Host: Your jump host IP
+   - Port: `22`
+   - Username & Password
 
 ### 2. Add Credentials
 
-1. Navigate to **Settings** page
-2. Click "Add Credential"
-3. Store device authentication credentials
+1. Go to **Settings** page
+2. Click **"Add Credential"**
+3. Enter your device SSH credentials
 
 ### 3. Add Devices
 
-1. Navigate to **Inventory** page
-2. Click "Add Device" or "Import CSV"
-3. Configure devices with their credentials and jump host profiles
-4. Assign tags for easy batch selection (e.g., "production", "core", "access")
+1. Go to **Inventory** page
+2. Click **"Add Device"** OR **"Import CSV"**
+3. Configure:
+   - Device details (name, IP, type)
+   - Select credential profile
+   - Select jump host chain
+   - Add tags (e.g., "production", "core")
 
 ### 4. Connect Gateway
 
-1. Click "Connect Gateway" in the top-right header
-2. Select your jump host chain (JH1 → JH2)
-3. Wait for "Gateway: Connected" status
+1. Click **"Connect Gateway"** (top-right)
+2. Select jump host chain
+3. Wait for green **"Gateway: Connected"** badge
 
-### 5. Run Batch Commands
+### 5. Run Commands
 
-1. Navigate to **Batch Operations**
-2. Select devices (individually or by tag)
+1. Go to **Batch Operations**
+2. Select devices (by clicking or by tag)
 3. Enter command (e.g., `show version`)
-4. Click "Execute Command"
-5. Download results as ZIP file
+4. Click **"Execute Command"**
+5. Download results as ZIP
+
+## Troubleshooting
+
+### ❌ "Address already in use" (Port 8000)
+
+**Problem:** Another service is using port 8000
+
+**Solution 1 - Kill the process:**
+
+```bash
+# macOS/Linux:
+lsof -ti:8000 | xargs kill -9
+
+# Windows:
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
+```
+
+**Solution 2 - Use different port:**
+
+```bash
+# Start backend on different port
+uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload
+
+# Update frontend/.env.local
+echo "NEXT_PUBLIC_API_URL=http://localhost:8001" > frontend/.env.local
+
+# Restart frontend
+cd frontend && npm run dev
+```
+
+### ❌ "Backend Connection Lost"
+
+**Problem:** Frontend can't connect to backend
+
+**Checklist:**
+
+1. ✅ Is backend running? Check Terminal 1
+2. ✅ Is it on port 8000? Check the logs
+3. ✅ Does `http://localhost:8000/health` return OK?
+4. ✅ Check `frontend/.env.local` has correct API URL
+
+**Fix:**
+
+```bash
+# Verify backend is running
+curl http://localhost:8000/health
+# Should return: {"status":"healthy"}
+
+# If using different port, update frontend
+echo "NEXT_PUBLIC_API_URL=http://localhost:8001" > frontend/.env.local
+cd frontend && npm run dev
+```
+
+### ❌ "Module not found" or Import Errors
+
+**Problem:** Missing dependencies
+
+**Solution:**
+
+```bash
+# Backend dependencies
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Frontend dependencies
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### ❌ "python-multipart" error
+
+**Problem:** File upload dependency missing
+
+**Solution:**
+
+```bash
+source .venv/bin/activate
+pip install python-multipart
+# Restart backend
+```
+
+### ❌ Frontend shows blank page
+
+**Problem:** Build or node_modules issue
+
+**Solution:**
+
+```bash
+cd frontend
+rm -rf .next
+npm run dev
+```
+
+### ❌ Gateway connection fails
+
+**Problem:** Can't establish SSH connection
+
+**Checklist:**
+
+1. ✅ Jump host credentials correct?
+2. ✅ Jump host reachable? (`ping <jumphost-ip>`)
+3. ✅ SSH port open? (`telnet <jumphost-ip> 22`)
+4. ✅ Firewall blocking connection?
+
+## Installation & Deployment
+
+### Prerequisites Verification
+
+Before starting, verify you have the required versions:
+
+```bash
+# Python (3.10 or higher)
+python3 --version
+
+# Node.js (18.x or higher)
+node --version
+
+# npm (9.x or higher)
+npm --version
+```
+
+If any are missing or wrong version, install them first:
+
+- **Python**: https://www.python.org/downloads/
+- **Node.js**: https://nodejs.org/ (includes npm)
 
 ## Project Structure
 
