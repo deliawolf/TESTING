@@ -1,0 +1,8 @@
+{
+  "example_jumphost": {
+    "host": "10.0.0.1",
+    "port": 22,
+    "username": "jumphost_user",
+    "password": "jumphost_password"
+  }
+}

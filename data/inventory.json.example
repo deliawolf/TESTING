@@ -1,0 +1,11 @@
+{
+  "EXAMPLE-DEVICE": {
+    "device_type": "cisco_nxos",
+    "host": "192.168.1.1",
+    "port": 22,
+    "credential_name": "example_credential",
+    "jumphost_profile": "example_jumphost",
+    "jumphost2_profile": null,
+    "tags": ["production", "core"]
+  }
+}
