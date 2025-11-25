@@ -5,6 +5,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, RefreshCw } from "lucide-react"
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
 export function BackendHealthCheck() {
   const [isHealthy, setIsHealthy] = useState(true)
   const [checking, setChecking] = useState(false)
@@ -12,7 +14,7 @@ export function BackendHealthCheck() {
   const checkBackend = async () => {
     setChecking(true)
     try {
-      const res = await fetch('http://localhost:8000/health', {
+      const res = await fetch(`${API_URL}/health`, {
         signal: AbortSignal.timeout(5000)
       })
       setIsHealthy(res.ok)
@@ -36,7 +38,7 @@ export function BackendHealthCheck() {
       <AlertCircle className="h-4 w-4" />
       <AlertTitle>Backend Connection Lost</AlertTitle>
       <AlertDescription className="flex items-center justify-between">
-        <span>Cannot connect to the backend API. Please check if the server is running.</span>
+        <span>Cannot connect to the backend API at {API_URL}. Please check if the server is running.</span>
         <Button 
           variant="outline" 
           size="sm" 
