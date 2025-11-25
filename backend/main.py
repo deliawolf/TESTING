@@ -10,7 +10,8 @@ app = FastAPI(
 
 # CORS Configuration
 origins = [
-    "http://localhost:3000",  # Next.js Frontend
+    "http://localhost:3003",  # Next.js Frontend (dynamic port)
+    "http://localhost:3000",  # Next.js Frontend (fallback)
     "http://localhost:8000",
 ]
 
